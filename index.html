@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Memo Genius</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: linear-gradient(to right, #fdfbfb, #ebedee);
+      --bg-dark: linear-gradient(to right, #1e1e2f, #2b2b40);
+      --text-light: #333;
+      --text-dark: #f2f2f2;
+      --card-bg-light: white;
+      --card-bg-dark: #2e2e3e;
+      --accent: #5e60ce;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    header {
+      text-align: center;
+      padding: 30px 20px 10px;
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: var(--card-bg-light);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      transition: background 0.3s;
+    }
+    body.dark-mode #container {
+      background: var(--card-bg-dark);
+    }
+    h2 {
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background: #4e52b3;
+    }
+    .correct { color: #2d6a4f; font-weight: bold; animation: pop 0.3s ease; }
+    .wrong { color: #d00000; font-weight: bold; animation: shake 0.3s ease; }
+    ul#dataList { padding-left: 20px; }
+    ul#dataList li { margin-bottom: 8px; }
+    #quizArea h3 { font-size: 20px; margin-bottom: 10px; }
+    #feedback { margin-top: 10px; font-size: 16px; }
+    #progressBarWrapper {
+      margin-top: 15px;
+      background: #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    #progressBar {
+      width: 0%;
+      height: 10px;
+      background: var(--accent);
+      transition: width 0.4s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    #darkToggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: 2px solid white;
+      border-radius: 50px;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .score {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>💡 Memo Genius</h1>
+    <p>Fun & Focused Definition Drills</p>
+    <button id="darkToggle" onclick="toggleDarkMode()">🌙</button>
+  </header>
+  <div id="container">
+    <div class="section" id="dataSection">
+      <h2>📝 Add Title and Definition</h2>
+      <input type="text" id="title" placeholder="Enter title" />
+      <textarea id="definition" placeholder="Enter definition"></textarea>
+      <button onclick="addDefinition()">Add</button>
+      <button onclick="clearAllData()">Clear All</button>
+      <button onclick="exportData()">Export JSON</button>
+      <ul id="dataList"></ul>
+    </div>
+
+    <div class="section">
+      <h2>🎯 Start a Round</h2>
+      <button onclick="startRound()">Start</button>
+      <div id="quizArea" style="display:none;">
+        <h3 id="currentTitle"></h3>
+        <input type="text" id="answerInput" placeholder="Type the definition here" onkeypress="handleKey(event)" />
+        <button onclick="submitAnswer()">Submit</button>
+        <div id="progressBarWrapper"><div id="progressBar"></div></div>
+        <p class="score" id="scoreDisplay"></p>
+        <p id="feedback"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let data = [];
+    let queue = [];
+    let current = null;
+    let total = 0;
+    let score = 0;
+
+    const GITHUB_JSON_URL = "https://raw.githubusercontent.com/AyoubG1/quiz-test/refs/heads/main/data.json";
+
+    window.onload = async () => {
+      if (localStorage.getItem('dark-mode') === 'true') document.body.classList.add('dark-mode');
+      try {
+        const res = await fetch(GITHUB_JSON_URL);
+        const githubData = await res.json();
+        const localData = JSON.parse(localStorage.getItem('quizData') || '[]');
+        const merged = mergeUniqueData(githubData, localData);
+        data = merged;
+        localStorage.setItem('quizData', JSON.stringify(data));
+        updateDataList();
+      } catch (e) {
+        alert("Failed to load from GitHub, using local data only.");
+        data = JSON.parse(localStorage.getItem('quizData') || '[]');
+        updateDataList();
+      }
+    };
+
+    function mergeUniqueData(remote, local) {
+      const map = new Map();
+      [...remote, ...local].forEach(item => map.set(item.title, item));
+      return Array.from(map.values());
+    }
+
+    function normalizeText(text) {
+      return text.toLowerCase()
+        .replace(/[äÄ]/g, 'a')
+        .replace(/[öÖ]/g, 'o')
+        .replace(/[üÜ]/g, 'u')
+        .replace(/ß/g, 'ss')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function updateDataList() {
+      const list = document.getElementById('dataList');
+      list.innerHTML = '';
+      data.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<b>${item.title}</b>: ${item.definition}`;
+        list.appendChild(li);
+      });
+    }
+
+    function addDefinition() {
+      const title = document.getElementById('title').value.trim();
+      const definition = document.getElementById('definition').value.trim();
+      if (title && definition) {
+        data.push({ title, definition });
+        localStorage.setItem('quizData', JSON.stringify(data));
+        updateDataList();
+        document.getElementById('title').value = '';
+        document.getElementById('definition').value = '';
+      }
+    }
+
+    function clearAllData() {
+      if (confirm("Clear all data?")) {
+        data = [];
+        localStorage.removeItem('quizData');
+        updateDataList();
+      }
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "data.json";
+      a.click();
+    }
+
+    function shuffleArray(arr) {
+      return arr.sort(() => Math.random() - 0.5);
+    }
+
+    function startRound() {
+      if (data.length === 0) {
+        alert("Please add some data first.");
+        return;
+      }
+      queue = shuffleArray([...data]);
+      total = queue.length;
+      score = 0;
+      document.getElementById('quizArea').style.display = 'block';
+      document.getElementById('dataSection').style.display = 'none';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('answerInput').style.display = 'inline-block';
+      updateProgress();
+      updateScore();
+      nextItem();
+    }
+
+    function nextItem() {
+      updateProgress();
+      if (queue.length === 0) {
+        document.getElementById('currentTitle').textContent = "🎉 You finished all definitions!";
+        document.getElementById('answerInput').style.display = 'none';
+        document.getElementById('dataSection').style.display = 'block';
+        return;
+      }
+      current = queue.pop();
+      document.getElementById('currentTitle').textContent = current.title;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').focus();
+    }
+
+    function updateProgress() {
+      const progress = total === 0 ? 0 : ((total - queue.length) / total) * 100;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+    }
+
+    function updateScore() {
+      document.getElementById('scoreDisplay').textContent = `Score: ${score} / ${total}`;
+    }
+
+    function submitAnswer() {
+      const userInput = document.getElementById('answerInput').value.trim();
+      const feedback = document.getElementById('feedback');
+      const correctAnswer = normalizeText(current.definition);
+      const userNormalized = normalizeText(userInput);
+      if (userNormalized === correctAnswer) {
+        score++;
+        feedback.innerHTML = `<span class='correct'>Correct!</span>`;
+      } else {
+        feedback.innerHTML = `<span class='wrong'>Wrong! Correct answer:</span> ${current.definition}`;
+      }
+      updateScore();
+      nextItem();
+    }
+
+    function handleKey(event) {
+      if (event.key === 'Enter') {
+        submitAnswer();
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('dark-mode', document.body.classList.contains('dark-mode'));
+    }
+  </script>
+</body>
+</html>
+
