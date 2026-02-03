@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Melody Dash placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#15182a" />
+      <stop offset="1" stop-color="#0c0d16" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6d7cff" />
+      <stop offset="1" stop-color="#f95d9b" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="960" cy="140" r="120" fill="#40e0d0" opacity="0.25" />
+  <rect x="120" y="170" width="960" height="320" rx="48" fill="#111326" opacity="0.8" />
+  <text x="180" y="310" font-size="64" font-family="Outfit, sans-serif" fill="white">Melody Dash</text>
+  <text x="180" y="380" font-size="30" font-family="Outfit, sans-serif" fill="#b2b7d6">Dodge the cubes. Sync with the beat.</text>
+  <rect x="180" y="420" width="240" height="56" rx="28" fill="url(#accent)" />
+  <text x="220" y="457" font-size="22" font-family="Outfit, sans-serif" fill="white">Download</text>
+</svg>

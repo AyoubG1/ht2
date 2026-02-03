@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Melody Dash screenshot placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1f3b" />
+      <stop offset="1" stop-color="#0c0d16" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6d7cff" />
+      <stop offset="1" stop-color="#f95d9b" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="32" fill="url(#bg)" />
+  <rect x="40" y="40" width="560" height="280" rx="24" fill="#121426" />
+  <path d="M120 240 L200 180 L280 220 L360 140 L440 190 L520 120" stroke="url(#accent)" stroke-width="6" fill="none" />
+  <circle cx="520" cy="120" r="10" fill="#40e0d0" />
+  <text x="60" y="90" font-size="20" font-family="Outfit, sans-serif" fill="#b2b7d6">Melody Dash</text>
+  <text x="60" y="120" font-size="14" font-family="Outfit, sans-serif" fill="#6d7cff">Screenshot 3</text>
+</svg>
