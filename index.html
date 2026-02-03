@@ -1,307 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Memo Genius</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Melody Dash — Rhythm Runs on Your Phone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg-light: linear-gradient(to right, #fdfbfb, #ebedee);
-      --bg-dark: linear-gradient(to right, #1e1e2f, #2b2b40);
-      --text-light: #333;
-      --text-dark: #f2f2f2;
-      --card-bg-light: white;
-      --card-bg-dark: #2e2e3e;
-      --accent: #5e60ce;
+      --bg: #0c0d16;
+      --panel: #15182a;
+      --panel-light: #1e2240;
+      --text: #f5f6ff;
+      --muted: #b2b7d6;
+      --accent: #6d7cff;
+      --accent-2: #f95d9b;
+      --accent-3: #40e0d0;
+      --glow: 0 0 25px rgba(109, 124, 255, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-light);
-      color: var(--text-light);
-      transition: background 0.3s, color 0.3s;
+      font-family: 'Outfit', sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top, #1b1f3b 0%, #0c0d16 60%);
     }
-    body.dark-mode {
-      background: var(--bg-dark);
-      color: var(--text-dark);
-    }
+
     header {
-      text-align: center;
-      padding: 30px 20px 10px;
-      background: var(--accent);
-      color: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      background: rgba(12, 13, 22, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
-    #container {
-      max-width: 800px;
-      margin: 30px auto;
-      background: var(--card-bg-light);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      transition: background 0.3s;
+
+    nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
     }
-    body.dark-mode #container {
-      background: var(--card-bg-dark);
+
+    .logo {
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    h2 {
+
+    .logo span {
       color: var(--accent);
-      margin-bottom: 10px;
     }
-    textarea, input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-top: 5px;
-      font-size: 16px;
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 24px;
+      margin: 0;
+      padding: 0;
     }
-    .section {
-      margin-bottom: 30px;
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 400;
+      transition: color 0.2s ease;
     }
-    button {
-      background: var(--accent);
-      color: white;
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+      padding: 80px 24px 40px;
+      align-items: center;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.4rem, 4vw, 3.6rem);
+      margin: 0 0 16px;
+      line-height: 1.1;
+    }
+
+    .hero-text p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .cta button,
+    .cta a {
       border: none;
-      padding: 10px 20px;
-      margin-top: 10px;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
-    button:hover {
-      background: #4e52b3;
+
+    .cta .primary {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: white;
+      box-shadow: var(--glow);
     }
-    .correct { color: #2d6a4f; font-weight: bold; animation: pop 0.3s ease; }
-    .wrong { color: #d00000; font-weight: bold; animation: shake 0.3s ease; }
-    ul#dataList { padding-left: 20px; }
-    ul#dataList li { margin-bottom: 8px; }
-    #quizArea h3 { font-size: 20px; margin-bottom: 10px; }
-    #feedback { margin-top: 10px; font-size: 16px; }
-    #progressBarWrapper {
-      margin-top: 15px;
-      background: #ddd;
-      border-radius: 6px;
+
+    .cta .secondary {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text);
+    }
+
+    .hero-card {
+      background: linear-gradient(140deg, rgba(109, 124, 255, 0.2), rgba(249, 93, 155, 0.18));
+      padding: 28px;
+      border-radius: 24px;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+      position: relative;
       overflow: hidden;
     }
-    #progressBar {
-      width: 0%;
-      height: 10px;
-      background: var(--accent);
-      transition: width 0.4s ease;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-    #darkToggle {
+
+    .hero-card::after {
+      content: "";
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background: transparent;
-      border: 2px solid white;
-      border-radius: 50px;
-      color: white;
-      padding: 5px 10px;
-      cursor: pointer;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(64, 224, 208, 0.2), transparent 55%);
+      opacity: 0.7;
     }
-    .score {
-      margin-top: 10px;
-      font-size: 18px;
-      font-weight: 600;
+
+    .hero-card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-card h2 {
+      font-size: 1.6rem;
+      margin: 0 0 12px;
+    }
+
+    .hero-card p {
+      color: var(--muted);
+      margin: 0 0 24px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+    }
+
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--panel);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .feature-card h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .playlist {
+      background: var(--panel-light);
+      border-radius: 24px;
+      padding: 32px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .track {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(12, 13, 22, 0.6);
+      border-radius: 16px;
+      padding: 12px 16px;
+    }
+
+    .track span {
+      color: var(--muted);
+    }
+
+    .badge {
+      background: rgba(64, 224, 208, 0.2);
+      color: var(--accent-3);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+    }
+
+    .updates {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .update-card {
+      background: var(--panel);
+      border-radius: 20px;
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .update-card h4 {
+      margin: 0 0 12px;
+    }
+
+    .update-card p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .cta-banner {
+      background: linear-gradient(120deg, rgba(109, 124, 255, 0.2), rgba(249, 93, 155, 0.2));
+      border-radius: 24px;
+      padding: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 20px 60px;
+    }
+
+    @media (max-width: 700px) {
+      nav ul {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>💡 Memo Genius</h1>
-    <p>Fun & Focused Definition Drills</p>
-    <button id="darkToggle" onclick="toggleDarkMode()">🌙</button>
+    <nav>
+      <div class="logo">🎵 <span>Melody</span> Dash</div>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#soundtrack">Soundtrack</a></li>
+        <li><a href="#updates">Updates</a></li>
+      </ul>
+    </nav>
   </header>
-  <div id="container">
-    <div class="section" id="dataSection">
-      <h2>📝 Add Title and Definition</h2>
-      <input type="text" id="title" placeholder="Enter title" />
-      <textarea id="definition" placeholder="Enter definition"></textarea>
-      <button onclick="addDefinition()">Add</button>
-      <button onclick="clearAllData()">Clear All</button>
-      <button onclick="exportData()">Export JSON</button>
-      <ul id="dataList"></ul>
-    </div>
 
-    <div class="section">
-      <h2>🎯 Start a Round</h2>
-      <button onclick="startRound()">Start</button>
-      <div id="quizArea" style="display:none;">
-        <h3 id="currentTitle"></h3>
-        <input type="text" id="answerInput" placeholder="Type the definition here" onkeypress="handleKey(event)" />
-        <button onclick="submitAnswer()">Submit</button>
-        <div id="progressBarWrapper"><div id="progressBar"></div></div>
-        <p class="score" id="scoreDisplay"></p>
-        <p id="feedback"></p>
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Run the beat. Swipe the melody.</h1>
+        <p>
+          Melody Dash is a neon-charged rhythm runner where every jump, slide, and dash
+          syncs perfectly with the soundtrack. Build your combo, unlock dazzling stages,
+          and chase high scores with every chorus.
+        </p>
+        <div class="cta">
+          <a class="primary" href="#">Download on iOS</a>
+          <a class="secondary" href="#">Get it on Android</a>
+        </div>
       </div>
-    </div>
-  </div>
+      <div class="hero-card">
+        <div class="hero-card-content">
+          <h2>Season 4: Synthwave Skies</h2>
+          <p>New tracks, new skyways, and a festival of holographic visuals.</p>
+          <div class="stats">
+            <div class="stat">
+              <strong>120+</strong>
+              <span>Levels</span>
+            </div>
+            <div class="stat">
+              <strong>45</strong>
+              <span>Original Tracks</span>
+            </div>
+            <div class="stat">
+              <strong>9</strong>
+              <span>Dash Heroes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <script>
-    let data = [];
-    let queue = [];
-    let current = null;
-    let total = 0;
-    let score = 0;
+    <section id="features">
+      <h2 class="section-title">Why players love Melody Dash</h2>
+      <p class="section-subtitle">Glide through hand-crafted stages, collect beat shards, and remix your run.</p>
+      <div class="features">
+        <div class="feature-card">
+          <h3>Rhythm-locked controls</h3>
+          <p>Tap, hold, and swipe in time with the beat for turbo boosts and perfect landings.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Custom soundboards</h3>
+          <p>Mix new layers into every level and craft your own signature sound.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Live events</h3>
+          <p>Compete in weekly run-offs for exclusive skins, trails, and seasonal trophies.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Story chapters</h3>
+          <p>Unfold the mystery of the Echo City DJs and unlock cinematic cutscenes.</p>
+        </div>
+      </div>
+    </section>
 
-    const GITHUB_JSON_URL = "https://raw.githubusercontent.com/AyoubG1/ht2/refs/heads/main/data.json";
+    <section id="soundtrack">
+      <h2 class="section-title">Soundtrack spotlight</h2>
+      <p class="section-subtitle">Curated by top electronic artists, each track evolves with your combo streak.</p>
+      <div class="playlist">
+        <div class="track">
+          <div>
+            <strong>Pulse Garden</strong>
+            <span> — Luma Drive</span>
+          </div>
+          <span class="badge">New</span>
+        </div>
+        <div class="track">
+          <div>
+            <strong>Horizon Sparks</strong>
+            <span> — Nova Civic</span>
+          </div>
+          <span class="badge">Epic</span>
+        </div>
+        <div class="track">
+          <div>
+            <strong>Velocity Bloom</strong>
+            <span> — Echo Voyage</span>
+          </div>
+          <span class="badge">Fan favorite</span>
+        </div>
+      </div>
+    </section>
 
-    window.onload = async () => {
-      if (localStorage.getItem('dark-mode') === 'true') document.body.classList.add('dark-mode');
-      try {
-        const res = await fetch(GITHUB_JSON_URL);
-        const githubData = await res.json();
-        const localData = JSON.parse(localStorage.getItem('quizData') || '[]');
-        const merged = mergeUniqueData(githubData, localData);
-        data = merged;
-        localStorage.setItem('quizData', JSON.stringify(data));
-        updateDataList();
-      } catch (e) {
-        alert("Failed to load from GitHub, using local data only.");
-        data = JSON.parse(localStorage.getItem('quizData') || '[]');
-        updateDataList();
-      }
-    };
+    <section id="updates">
+      <h2 class="section-title">Fresh from the studio</h2>
+      <p class="section-subtitle">We are always shipping new stages, social features, and collabs.</p>
+      <div class="updates">
+        <div class="update-card">
+          <h4>Team Dash</h4>
+          <p>Squad up with friends, synchronize your runs, and unlock squad-only harmony buffs.</p>
+        </div>
+        <div class="update-card">
+          <h4>Creator Kits</h4>
+          <p>Design levels with advanced beat mapping tools, then share them worldwide.</p>
+        </div>
+        <div class="update-card">
+          <h4>Arcade Mode</h4>
+          <p>One song, one life. Perfect for speedrunners and high-score chasers.</p>
+        </div>
+      </div>
+    </section>
 
-    function mergeUniqueData(remote, local) {
-      const map = new Map();
-      [...remote, ...local].forEach(item => map.set(item.title, item));
-      return Array.from(map.values());
-    }
+    <section>
+      <div class="cta-banner">
+        <div>
+          <h2>Ready to dash?</h2>
+          <p class="section-subtitle">Join millions of players and feel every beat.</p>
+        </div>
+        <div class="cta">
+          <a class="primary" href="#">Play free</a>
+          <a class="secondary" href="#">Join the community</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    function normalizeText(text) {
-      return text.toLowerCase()
-        .replace(/[äÄ]/g, 'a')
-        .replace(/[öÖ]/g, 'o')
-        .replace(/[üÜ]/g, 'u')
-        .replace(/ß/g, 'ss')
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
-
-    function updateDataList() {
-      const list = document.getElementById('dataList');
-      list.innerHTML = '';
-      data.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `<b>${item.title}</b>: ${item.definition}`;
-        list.appendChild(li);
-      });
-    }
-
-    function addDefinition() {
-      const title = document.getElementById('title').value.trim();
-      const definition = document.getElementById('definition').value.trim();
-      if (title && definition) {
-        data.push({ title, definition });
-        localStorage.setItem('quizData', JSON.stringify(data));
-        updateDataList();
-        document.getElementById('title').value = '';
-        document.getElementById('definition').value = '';
-      }
-    }
-
-    function clearAllData() {
-      if (confirm("Clear all data?")) {
-        data = [];
-        localStorage.removeItem('quizData');
-        updateDataList();
-      }
-    }
-
-    function exportData() {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = "data.json";
-      a.click();
-    }
-
-    function shuffleArray(arr) {
-      return arr.sort(() => Math.random() - 0.5);
-    }
-
-    function startRound() {
-      if (data.length === 0) {
-        alert("Please add some data first.");
-        return;
-      }
-      queue = shuffleArray([...data]);
-      total = queue.length;
-      score = 0;
-      document.getElementById('quizArea').style.display = 'block';
-      document.getElementById('dataSection').style.display = 'none';
-      document.getElementById('feedback').textContent = '';
-      document.getElementById('answerInput').style.display = 'inline-block';
-      updateProgress();
-      updateScore();
-      nextItem();
-    }
-
-    function nextItem() {
-      updateProgress();
-      if (queue.length === 0) {
-        document.getElementById('currentTitle').textContent = "🎉 You finished all definitions!";
-        document.getElementById('answerInput').style.display = 'none';
-        document.getElementById('dataSection').style.display = 'block';
-        return;
-      }
-      current = queue.pop();
-      document.getElementById('currentTitle').textContent = current.title;
-      document.getElementById('answerInput').value = '';
-      document.getElementById('answerInput').focus();
-    }
-
-    function updateProgress() {
-      const progress = total === 0 ? 0 : ((total - queue.length) / total) * 100;
-      document.getElementById('progressBar').style.width = `${progress}%`;
-    }
-
-    function updateScore() {
-      document.getElementById('scoreDisplay').textContent = `Score: ${score} / ${total}`;
-    }
-
-    function submitAnswer() {
-      const userInput = document.getElementById('answerInput').value.trim();
-      const feedback = document.getElementById('feedback');
-      const correctAnswer = normalizeText(current.definition);
-      const userNormalized = normalizeText(userInput);
-      if (userNormalized === correctAnswer) {
-        score++;
-        feedback.innerHTML = `<span class='correct'>Correct!</span>`;
-      } else {
-        feedback.innerHTML = `<span class='wrong'>Wrong! Correct answer:</span> ${current.definition}`;
-      }
-      updateScore();
-      nextItem();
-    }
-
-    function handleKey(event) {
-      if (event.key === 'Enter') {
-        submitAnswer();
-      }
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('dark-mode', document.body.classList.contains('dark-mode'));
-    }
-  </script>
+  <footer>
+    <p>Melody Dash © 2025 — Rhythm runner for mobile.</p>
+  </footer>
 </body>
 </html>
-
